@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UAV Express</title>
+  <script type="text/javascript" src="http://api.map.baidu.com/getscript?v=2.0&ak=maXe8MjLdvhu2lmFNYFs0Ou1ra3SfB85&services=&t=20170705114645"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+  <script type="text/javascript" src="/js/uav.js"></script>
+  <script type="text/javascript" src="/js/ajax.js"></script>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+
+<body>
+  <div>
+    <button onclick="Hide('testUav');showOrHide('testUser')">测试无人机配送</button>
+    <div id="testUser" style="position: fixed;z-index: 100;display:none">
+      <div class="testUser">
+        经度<input type="text" id="1Longitude" value="120.132193" /> 纬度
+        <input type="text" id="1Latitude" value="30.275040" /> 地址
+        <input type="text" id="1Addr" value="30舍" />
+        <button onclick="requestuav(1)">请求无人机配送</button>
+      </div>
+      <div class="testUser">
+        经度<input type="text" id="2Longitude" value="120.131402" /> 纬度
+        <input type="text" id="2Latitude" value="30.275439" /> 地址
+        <input type="text" id="2Addr" value="31舍" />
+        <button onclick="requestuav(2)">请求无人机配送</button>
+      </div>
+    </div>
+    <button onclick="Hide('testUser');showOrHide('testUav')">查看无人机</button>
+    <div id="testUav" style="position: fixed;z-index: 100;">
+    </div>
+  </div>
+  <div class="map">
+    <div id="container"></div>
+    <div>
+      <script type="text/javascript">
+        function showOrHide(id) {
+          document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none'
+        }
+        function Hide(id) {
+          document.getElementById(id).style.display = 'none'
+        }
+        function requestuav(index) {
+          Longitude = document.getElementById(index + 'Longitude').value
+          Latitude = document.getElementById(index + 'Latitude').value
+          Addr = document.getElementById(index + 'Addr').value
+          url = '/api/requestuav?Longitude=' + Longitude + '&Latitude=' + Latitude + '&Addr=' + Addr;
+          AjaxGet(url, (r) => {
+            console.log(r)
+          }, (e) => {
+            console.error(e)
+          })
+        }
+        initMap("container")
+        setInterval(() => {
+          AjaxGet('/api/getuavs', (r) => {
+            // console.log(r)
+            if (r.status == 0) {
+              html = `<table border="1">
+        <tr>
+          <th>ID</th>
+          <th>FromTime</th>
+          <th>From.Longitude</th>
+          <th>From.Latitude</th>
+          <th>To.Longitude</th>
+          <th>To.Latitude</th>
+          <th>Longitude</th>
+          <th>Latitude</th>
+          <th>Status</th>
+        </tr>`
+              for (var id in r.data) {
+                html+=` <tr>
+          <td>`+r.data[id].ID+`</td>
+          <td>`+r.data[id].FromTime+`</td>
+          <td>`+r.data[id].From.Longitude.toFixed(6)+`</td>
+          <td>`+r.data[id].From.Latitude.toFixed(6)+`</td>
+          <td>`+((r.data[id].To!=null)?(r.data[id].To.Longitude.toFixed(6)):('null'))+`</td>
+          <td>`+((r.data[id].To!=null)?(r.data[id].To.Latitude.toFixed(6)):('null'))+`</td>
+          <td>`+r.data[id].Longitude.toFixed(6)+`</td>
+          <td>`+r.data[id].Latitude.toFixed(6)+`</td>
+          <td>`+r.data[id].Status+`</td>
+        </tr>`
+                if (r.data[id].Status=='配送中') {
+                  if (!uavs.hasOwnProperty(id)) {
+                    newUav(r.data[id])
+                  } else {
+                    updateUav(r.data[id])
+                  }
+                  uavs[id] = r.data[id]
+                } else if (r.data[id].Status=='正在返程') {
+                  updateUav(r.data[id])
+                } else if (r.data[id].Status=='ob') {
+                  if (uavs.hasOwnProperty(id)) {
+                    removeUav(r.data[id])
+                    delete uavs[id]
+                  }
+                } else if (uavs.hasOwnProperty(id)) {
+                  updateUav(r.data[id])
+                }
+              }
+              html += `</table>`
+              document.getElementById('testUav').innerHTML = html
+            }
+          }, (e) => {
+            console.error(e)
+          })
+        }, 1000)
+      </script>
+</body>
+
+</html>
