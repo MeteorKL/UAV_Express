@@ -1,8 +1,7 @@
-package main
+package UAV_Express
 
 import (
 	"net/http"
-
 	"github.com/MeteorKL/koala"
 )
 
@@ -15,6 +14,7 @@ func main() {
 	koala.Get("/", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		koala.Render(w, "index.html", nil)
 	})
+	apiHandlers()
 	uavHandlers()
 	// http.HandleFunc("/ws", wsHandler)
 	koala.RunWithLog("2017")
