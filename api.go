@@ -35,7 +35,7 @@ func (uav *UAV) LockForUser(userId int) bool {
 
 func (uav *UAV) UnLock() bool {
 	select {
-	case <- uav.lock_user_id:
+	case <-uav.lock_user_id:
 		return true
 	default:
 		return false
@@ -85,13 +85,13 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 
 	payment := Payment{
 		DB_Payment{
-			Payment_id: rand.Int(), //TODO: Sync problem?
-			Payment_time: int(time.Now().UnixNano() / 1000000),
-			Payment_price: price,
+			Payment_id:      rand.Int(), //TODO: Sync problem?
+			Payment_time:    int(time.Now().UnixNano() / 1000000),
+			Payment_price:   price,
 			Payment_user_id: user.User_id,
-			Payment_items: pairs,
-			Payment_number: "S2Meteor", //TODO:
-			Payment_uav_id: uav.UAV_id,
+			Payment_items:   pairs,
+			Payment_number:  "S2Meteor", //TODO:
+			Payment_uav_id:  uav.UAV_id,
 		},
 	}
 	payment_user_id_time_index.insertPayment(payment)
@@ -115,7 +115,7 @@ func (item *Item) Sync() error {
 	defer item_index.lock.Unlock()
 	_itemRecord, ok := item_index.tree.Get(item.Item_id)
 	if !ok {
-		return errors.New("This user has been deleted!")
+		return errors.New("This item has been deleted!")
 	}
 	itemRecord := _itemRecord.(ItemRecord)
 	*itemRecord.DB_Item = item.DB_Item
@@ -127,7 +127,7 @@ func (uav *UAV) Sync() error {
 	defer uav_index.lock.Unlock()
 	_uavRecord, ok := uav_index.tree.Get(uav.UAV_id)
 	if !ok {
-		return errors.New("This UAV has been deleted!")
+		return errors.New("This uav has been deleted!")
 	}
 	uavRecord := _uavRecord.(UAVRecord)
 	*uavRecord.DB_UAV = uav.DB_UAV
