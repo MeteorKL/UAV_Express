@@ -1,4 +1,4 @@
-package UAV_Express
+package main
 
 import (
 	"github.com/MeteorKL/koala"
