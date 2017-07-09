@@ -1,13 +1,13 @@
-package UAV_Express
+package main
 
 import (
-	"testing"
 	"log"
+	"testing"
 )
 
 func TestReBuildIndex(t *testing.T) {
 	userTable = []DB_User{
-		{User_id: 1, User_name: "S1Meteor",},
+		{User_id: 1, User_name: "S1Meteor"},
 		{User_id: 2, User_name: "S2Meteor"},
 	}
 	ReBuildIndex()

@@ -1,7 +1,8 @@
-package UAV_Express
+package main
 
 import (
 	"sync"
+
 	"github.com/inszva/gods/maps/treemap"
 )
 
@@ -64,7 +65,7 @@ type UserIndex struct {
 
 type UserIdTimeUnion struct {
 	userId int
-	time int
+	time   int
 }
 
 type PaymentUserIdTimeIndex struct {
@@ -83,12 +84,12 @@ type UAVIndex struct {
 }
 
 var (
-	user_id_index = UserIndex {
+	user_id_index = UserIndex{
 		tree: treemap.NewWithIntComparator(),
 	}
 
-	payment_user_id_time_index = PaymentUserIdTimeIndex {
-		tree: treemap.NewWith(func (a, b interface{}) int {
+	payment_user_id_time_index = PaymentUserIdTimeIndex{
+		tree: treemap.NewWith(func(a, b interface{}) int {
 			union1, union2 := a.(UserIdTimeUnion), b.(UserIdTimeUnion)
 			if union1.userId > union2.userId {
 				return 1
@@ -106,11 +107,11 @@ var (
 		}),
 	}
 
-	item_index = ItemIndex {
+	item_index = ItemIndex{
 		tree: treemap.NewWithIntComparator(),
 	}
 
-	uav_index = UAVIndex {
+	uav_index = UAVIndex{
 		tree: treemap.NewWithIntComparator(),
 	}
 )
@@ -152,7 +153,7 @@ func (paymentUserIdTimeIndex *PaymentUserIdTimeIndex) getUserLastPayments(userId
 	defer payment_user_id_time_index.lock.RUnlock()
 
 	iter, _ := payment_user_id_time_index.tree.GetIteratorOrPrev(
-		UserIdTimeUnion{userId+1, 0})
+		UserIdTimeUnion{userId + 1, 0})
 	if iter.Position() != 1 {
 		return
 	}
@@ -181,6 +182,7 @@ func (paymentUserIdTimeIndex *PaymentUserIdTimeIndex) getUserLastPayments(userId
 		if !iter.Prev() {
 			return
 		}
+		sum++
 	}
 	return
 }
