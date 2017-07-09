@@ -1,0 +1,4 @@
+[{"item_id":1,"item_name":"咸鱼一条","item_img":"https://docs.jiguang.cn/jpush/client/image/jpush_android.png","item_price":100,"item_description":"著名咸鱼S2Meteor的分身"}]
+[{"user_id":1,"user_name":"S2Meteor","user_avatar":"https://docs.jiguang.cn/jpush/client/image/jpush_android.png","user_balance":100,"user_password":"MeteorS2","stop_pin":"","stop_longitude":0,"stop_latitude":0,"stop_buttons":[0,0,0,0,0,0]}]
+[{"uav_id":1,"uav_name":"No0","uav_longitude":0,"uav_latitude":0,"uav_serving_payment_id":0,"uav_status":0},{"uav_id":2,"uav_name":"No1","uav_longitude":0,"uav_latitude":0,"uav_serving_payment_id":0,"uav_status":0}]
+[{"payment_id":1,"payment_number":"","payment_item_id":null,"payment_user_id":2,"payment_uav_id":0,"payment_price":0,"payment_time":15646463},{"payment_id":3,"payment_number":"","payment_item_id":null,"payment_user_id":3,"payment_uav_id":0,"payment_price":0,"payment_time":183456486}]
