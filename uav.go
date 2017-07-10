@@ -83,11 +83,18 @@ func removeUav(id string) {
 	delete(uavs, id)
 }
 
-func distance(from *Pos, to *Pos) float64 {
+func _distance(from *Pos, to *Pos) float64 {
 	return (((to.Longitude - from.Longitude) * math.Pi * 12656 * math.Cos(((to.Latitude+from.Latitude)/2)*math.Pi/180) / 180) *
 		((to.Longitude - from.Longitude) * math.Pi * 12656 * math.Cos(((to.Latitude+from.Latitude)/2)*math.Pi/180) / 180)) +
 		(((to.Latitude - from.Latitude) * math.Pi * 12656 / 180) *
 			((to.Latitude - from.Latitude) * math.Pi * 12656 / 180))
+}
+
+func distance(from_longitude float64, from_latitude float64, to_longitude float64, to_latitude float64) float64 {
+	return (((to_longitude - from_longitude) * math.Pi * 12656 * math.Cos(((to_latitude+from_latitude)/2)*math.Pi/180) / 180) *
+		((to_longitude - from_longitude) * math.Pi * 12656 * math.Cos(((to_latitude+from_latitude)/2)*math.Pi/180) / 180)) +
+		(((to_latitude - from_latitude) * math.Pi * 12656 / 180) *
+			((to_latitude - from_latitude) * math.Pi * 12656 / 180))
 }
 
 func getAvailableUav(From *Pos) (string, error) {
@@ -100,7 +107,7 @@ func getAvailableUav(From *Pos) (string, error) {
 }
 
 func assignUavTasks(From *Pos, To *Pos) string {
-	if distance(From, To) > distance(she31Pos, shitang2Pos)*5 {
+	if _distance(From, To) > _distance(she31Pos, shitang2Pos)*5 {
 		return "附近没有无人机"
 	}
 	ID, err := getAvailableUav(From)
@@ -125,14 +132,12 @@ func randomMove() {
 	}
 }
 
-const v float64 = 0.030
-
 func (u *Uav) regularMove(dstStatus string) {
-	r := v / distance(u.From, u.To)
+	r := v / _distance(u.From, u.To)
 	u.Mutex.Lock()
 	u.Longitude = r*(u.To.Longitude-u.From.Longitude) + u.Longitude
 	u.Latitude = r*(u.To.Latitude-u.From.Latitude) + u.Latitude
-	if distance(pos(u.Longitude, u.Latitude, []string{}), u.From) > distance(u.From, u.To) {
+	if _distance(pos(u.Longitude, u.Latitude, []string{}), u.From) > _distance(u.From, u.To) {
 		u.Longitude = u.To.Longitude
 		u.Latitude = u.To.Latitude
 		u.Status = dstStatus

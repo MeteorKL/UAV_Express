@@ -24,6 +24,47 @@ type UAV struct {
 	lock_user_id chan int `json:"-"`
 }
 
+const v float64 = 0.030
+
+func (uav *UAV) move(from_longitude float64, from_latitude float64, to_longitude float64, to_latitude float64) {
+	distance_from_to := distance(from_longitude, from_latitude, to_longitude, to_latitude)
+	r := v / distance_from_to
+	for {
+		timer1 := time.NewTicker(time.Second)
+		for {
+			select {
+			case <-timer1.C:
+				switch uav.UAV_status {
+				case UAV_STATUS_SENDING:
+					uav.UAV_longitude = r*(to_longitude-from_longitude) + uav.UAV_longitude
+					uav.UAV_latitude = r*(to_latitude-from_latitude) + uav.UAV_latitude
+					if distance(uav.UAV_longitude, uav.UAV_latitude, from_longitude, from_latitude) > distance_from_to {
+						uav.UAV_longitude = to_longitude
+						uav.UAV_latitude = to_latitude
+						uav.UAV_status = UAV_STATUS_LANDING
+					}
+					uav.Sync()
+				case UAV_STATUS_LANDING:
+					time.Sleep(time.Second * 5)
+					uav.UAV_status = UAV_STATUS_RETURNING
+					uav.Sync()
+				case UAV_STATUS_RETURNING:
+					uav.UAV_longitude = r*(to_longitude-from_longitude) + uav.UAV_longitude
+					uav.UAV_latitude = r*(to_latitude-from_latitude) + uav.UAV_latitude
+					if distance(uav.UAV_longitude, uav.UAV_latitude, from_longitude, from_latitude) > distance_from_to {
+						uav.UAV_longitude = to_longitude
+						uav.UAV_latitude = to_latitude
+						uav.UAV_status = UAV_STATUS_READY
+					}
+					uav.Sync()
+				case UAV_STATUS_READY:
+					return
+				}
+			}
+		}
+	}
+}
+
 func (uav *UAV) LockForUser(userId int) bool {
 	select {
 	case uav.lock_user_id <- userId:
@@ -82,11 +123,15 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 		return false
 	}
 	uav.UAV_status = UAV_STATUS_SENDING
+	Payment_id := rand.Int() //TODO: Sync problem?
+	uav.UAV_serving_payment_id = Payment_id
+	uav.Sync()
+	go uav.move(uav.UAV_longitude, uav.UAV_latitude, user.Stop_longitude, user.Stop_latitude)
 	defer uav.UnLock()
 
 	payment := Payment{
 		DB_Payment{
-			Payment_id:      rand.Int(), //TODO: Sync problem?
+			Payment_id:      Payment_id,
 			Payment_time:    int(time.Now().UnixNano() / 1000000),
 			Payment_price:   price,
 			Payment_user_id: user.User_id,

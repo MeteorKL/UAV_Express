@@ -9,7 +9,7 @@ import (
 
 func apiHandlers() {
 	initDB()
-	koala.Get("/api/item", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+	koala.Get("/item", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		var start, limit int
 		start = koala.GetSingleIntParamOrDefault(p.ParamGet, "start", 0)
 		limit = koala.GetSingleIntParamOrDefault(p.ParamGet, "limit", 30)
@@ -45,6 +45,19 @@ func apiHandlers() {
 			return
 		}
 		koala.WriteJSON(w, getUAVById(id))
+	})
+
+	koala.Get("/uavs", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		uavs := getUAVList(0, 100)
+		// for id, _ := range uavs {
+		// 	uavs[id].UAV_serving_payment_id
+		// }
+		koala.WriteJSON(w, map[string]interface{}{
+			"status":  0,
+			"message": "获取无人机信息成功",
+			"data":    uavs,
+		},
+		)
 	})
 
 	koala.Post("/user/:id/payment", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
