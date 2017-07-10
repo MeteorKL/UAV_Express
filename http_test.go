@@ -43,6 +43,10 @@ func tGetUavs() string {
 	return string(data)
 }
 
+func tGetPayment(id string) {
+
+}
+
 func Test_getItemList(t *testing.T) {
 	t.Log(tGetItemList())
 	if payments, err := tGetPayments("1"); err == nil {
@@ -52,6 +56,8 @@ func Test_getItemList(t *testing.T) {
 	if payments, err := tGetPayments("1"); err == nil && len(payments) > 0 {
 		t.Log("订单数量: ", len(payments))
 		for i := range payments {
+			t.Log(payments[i])
+			t.Log(getPaymentById(payments[i].Payment_id))
 			_uav_id := payments[i].Payment_uav_id
 			uav_id := strconv.Itoa(_uav_id)
 			t.Log(tGetUav(uav_id))

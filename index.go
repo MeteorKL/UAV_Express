@@ -144,11 +144,17 @@ func (payment_user_id_time_index *PaymentUserIdTimeIndex) insertPayment(payment 
 	payment_user_id_time_index.lock.Lock()
 	defer payment_user_id_time_index.lock.Unlock()
 
+	payment_index.lock.Lock()
+	defer payment_index.lock.Unlock()
+
 	paymentTable = append(paymentTable, payment.DB_Payment)
 	payment_user_id_time_index.tree.Put(UserIdTimeUnion{
 		payment.Payment_user_id, payment.Payment_time,
 	}, PaymentRecord{
 		DB_Payment: &paymentTable[len(paymentTable)-1],
+	})
+	payment_index.tree.Put(payment.Payment_id, UserIdTimeUnion{
+		payment.Payment_user_id, payment.Payment_time,
 	})
 }
 

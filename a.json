@@ -15,8 +15,26 @@
         "user_balance": 100,
         "user_password": "MeteorS2",
         "stop_pin": "",
-        "stop_longitude": 0,
-        "stop_latitude": 0,
+        "stop_longitude": 120.132193,
+        "stop_latitude": 30.275040,
+        "stop_buttons": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    },
+    {
+        "user_id": 2,
+        "user_name": "31舍的咸鱼",
+        "user_avatar": "https://docs.jiguang.cn/jpush/client/image/jpush_android.png",
+        "user_balance": 100,
+        "user_password": "31舍的咸鱼",
+        "stop_pin": "",
+        "stop_longitude": 120.131402,
+        "stop_latitude": 30.275439,
         "stop_buttons": [
             0,
             0,

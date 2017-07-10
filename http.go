@@ -49,13 +49,35 @@ func apiHandlers() {
 
 	koala.Get("/uavs", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		uavs := getUAVList(0, 100)
-		// for id, _ := range uavs {
-		// 	uavs[id].UAV_serving_payment_id
-		// }
+		// var payments []*Payment
+		// var users []*User
+		var from_to []interface{}
+		for id, _ := range uavs {
+			if uavs[id].UAV_serving_payment_id != 0 {
+				payment := getPaymentById(uavs[id].UAV_serving_payment_id)
+				// payments = append(payments, p)
+				u := getUserById(payment.Payment_user_id)
+				// users = append(users, u)
+				from_to = append(from_to, map[string]interface{}{
+					"from_longitude": STORE_LONGITUDE,
+					"from_latitude":  STORE_LATITUDE,
+					"to_longitude":   u.Stop_longitude,
+					"to_latitude":    u.Stop_latitude,
+				})
+			} else {
+				from_to = append(from_to, nil)
+				// payments = append(payments, nil)
+				// users = append(users, nil)
+			}
+		}
 		koala.WriteJSON(w, map[string]interface{}{
 			"status":  0,
 			"message": "获取无人机信息成功",
-			"data":    uavs,
+			"data": map[string]interface{}{
+				"uavs": uavs,
+				// "payments": payments,
+				"from_to": from_to,
+			},
 		},
 		)
 	})
@@ -124,8 +146,9 @@ func apiHandlers() {
 		}
 		user := getUserById(id)
 		if user == nil {
-			w.WriteHeader(403)
-			w.Write([]byte(err.Error()))
+			println(items)
+			w.WriteHeader(404)
+			w.Write([]byte("No this user"))
 			return
 		}
 

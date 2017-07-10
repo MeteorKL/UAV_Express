@@ -63,37 +63,46 @@
         <tr>
           <th>uav_id</th>
           <th>uav_name</th>
-          <th>uav_serving_payment_id</th>
           <th>uav_longitude</th>
           <th>uav_latitude</th>
           <th>uav_status</th>
+          <th>uav_serving_payment_id</th>
+          <th>from_longitude</th>
+          <th>from_latitude</th>
+          <th>to_longitude</th>
+          <th>to_latitude</th>
         </tr>`
-              for (var id in r.data) {
+        console.log(r.data)
+              for (var id in r.data.uavs) {
                 html+=` <tr>
-          <td>`+r.data[id].uav_id+`</td>
-          <td>`+r.data[id].uav_name+`</td>
-          <td>`+r.data[id].uav_serving_payment_id+`</td>
-          <td>`+r.data[id].uav_longitude.toFixed(6)+`</td>
-          <td>`+r.data[id].uav_latitude.toFixed(6)+`</td>
-          <td>`+r.data[id].uav_status+`</td>
+          <td>`+r.data.uavs[id].uav_id+`</td>
+          <td>`+r.data.uavs[id].uav_name+`</td>
+          <td>`+r.data.uavs[id].uav_longitude.toFixed(6)+`</td>
+          <td>`+r.data.uavs[id].uav_latitude.toFixed(6)+`</td>
+          <td>`+r.data.uavs[id].uav_status+`</td>
+          <td>`+r.data.uavs[id].uav_serving_payment_id+`</td>
+          <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].from_longitude:"")+`</td>
+          <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].from_latitude:"")+`</td>
+          <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].to_longitude:"")+`</td>
+          <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].to_latitude:"")+`</td>
         </tr>`
-                if (r.data[id].Status=='配送中') {
-                  if (!uavs.hasOwnProperty(id)) {
-                    newUav(r.data[id])
-                  } else {
-                    updateUav(r.data[id])
-                  }
-                  uavs[id] = r.data[id]
-                } else if (r.data[id].Status=='正在返程') {
-                  updateUav(r.data[id])
-                } else if (r.data[id].Status=='ob') {
-                  if (uavs.hasOwnProperty(id)) {
-                    removeUav(r.data[id])
-                    delete uavs[id]
-                  }
-                } else if (uavs.hasOwnProperty(id)) {
-                  updateUav(r.data[id])
-                }
+                // if (r.data[id].Status=='配送中') {
+                //   if (!uavs.hasOwnProperty(id)) {
+                //     newUav(r.data[id])
+                //   } else {
+                //     updateUav(r.data[id])
+                //   }
+                //   uavs[id] = r.data[id]
+                // } else if (r.data[id].Status=='正在返程') {
+                //   updateUav(r.data[id])
+                // } else if (r.data[id].Status=='ob') {
+                //   if (uavs.hasOwnProperty(id)) {
+                //     removeUav(r.data[id])
+                //     delete uavs[id]
+                //   }
+                // } else if (uavs.hasOwnProperty(id)) {
+                //   updateUav(r.data[id])
+                // }
               }
               html += `</table>`
               document.getElementById('testUav').innerHTML = html
