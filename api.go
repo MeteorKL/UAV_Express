@@ -111,6 +111,10 @@ func (user *User) getAvailableUAV() *UAV {
 	return uav_index.getAvailableUAV(user.User_id)
 }
 
+func getPaymentById(id int) *Payment {
+	return payment_index.getPayment(id)
+}
+
 func (user *User) createPayment(pairs []ItemPair) bool {
 	price := 0.0
 	for _, p := range pairs {
@@ -153,6 +157,23 @@ func (user *User) Sync() error {
 	}
 	userRecord := _userRecord.(UserRecord)
 	*userRecord.DB_User = user.DB_User
+	return nil
+}
+
+func (payment *Payment) Sync() error {
+	payment_user_id_time_index.lock.Lock()
+	defer payment_user_id_time_index.lock.Unlock()
+	payment_index.lock.Lock()
+	defer payment_index.lock.Unlock()
+
+	_paymentRecord, ok := payment_user_id_time_index.tree.Get(UserIdTimeUnion{
+		payment.Payment_user_id, payment.Payment_time,
+	})
+	if !ok {
+		return errors.New("This payment has been deleted!")
+	}
+	paymentRecord := _paymentRecord.(PaymentRecord)
+	*paymentRecord.DB_Payment = payment.DB_Payment
 	return nil
 }
 

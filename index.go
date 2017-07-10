@@ -73,6 +73,11 @@ type PaymentUserIdTimeIndex struct {
 	tree *treemap.Map
 }
 
+type PaymentIndex struct {
+	lock sync.RWMutex
+	tree *treemap.Map
+}
+
 type ItemIndex struct {
 	lock sync.RWMutex
 	tree *treemap.Map
@@ -105,6 +110,10 @@ var (
 			}
 			return 0
 		}),
+	}
+
+	payment_index = PaymentIndex{
+		tree: treemap.NewWithIntComparator(),
 	}
 
 	item_index = ItemIndex{
@@ -143,8 +152,17 @@ func (payment_user_id_time_index *PaymentUserIdTimeIndex) insertPayment(payment 
 	})
 }
 
-func (payment_user_id_time_index *PaymentUserIdTimeIndex) getPayment(id int) {
-
+func (payment_index *PaymentIndex) getPayment(id int) *Payment {
+	key, ok := payment_index.tree.Get(id)
+	if !ok {
+		return nil
+	}
+	_paymentRecord, ok := payment_user_id_time_index.tree.Get(key.(UserIdTimeUnion))
+	if !ok {
+		panic("Help index is not consistence with primary index.")
+	}
+	paymentRecord := _paymentRecord.(PaymentRecord)
+	return paymentRecord.GetRef()
 }
 
 func (payment_user_id_time_index *PaymentUserIdTimeIndex) getUserLastPayments(userId, start, limit int) (payments []*Payment) {
@@ -302,14 +320,18 @@ func ReBuildIndex() {
 	user_id_index.lock.Unlock()
 
 	payment_user_id_time_index.lock.Lock()
+	payment_index.lock.Lock()
 	payment_user_id_time_index.tree.Clear()
 	for i := 0; i < len(paymentTable); i++ {
-		payment_user_id_time_index.tree.Put(UserIdTimeUnion{
+		key := UserIdTimeUnion{
 			paymentTable[i].Payment_user_id, paymentTable[i].Payment_time,
-		}, PaymentRecord{
+		}
+		payment_user_id_time_index.tree.Put(key, PaymentRecord{
 			DB_Payment: &paymentTable[i],
 		})
+		payment_index.tree.Put(paymentTable[i].Payment_id, key)
 	}
+	payment_index.lock.Unlock()
 	payment_user_id_time_index.lock.Unlock()
 
 	item_index.lock.Lock()
