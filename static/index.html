@@ -56,32 +56,26 @@
         }
         initMap("container")
         setInterval(() => {
-          AjaxGet('/api/getuavs', (r) => {
+          AjaxGet('/uavs', (r) => {
             // console.log(r)
             if (r.status == 0) {
               html = `<table border="1">
         <tr>
-          <th>ID</th>
-          <th>FromTime</th>
-          <th>From.Longitude</th>
-          <th>From.Latitude</th>
-          <th>To.Longitude</th>
-          <th>To.Latitude</th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-          <th>Status</th>
+          <th>uav_id</th>
+          <th>uav_name</th>
+          <th>uav_serving_payment_id</th>
+          <th>uav_longitude</th>
+          <th>uav_latitude</th>
+          <th>uav_status</th>
         </tr>`
               for (var id in r.data) {
                 html+=` <tr>
-          <td>`+r.data[id].ID+`</td>
-          <td>`+r.data[id].FromTime+`</td>
-          <td>`+r.data[id].From.Longitude.toFixed(6)+`</td>
-          <td>`+r.data[id].From.Latitude.toFixed(6)+`</td>
-          <td>`+((r.data[id].To!=null)?(r.data[id].To.Longitude.toFixed(6)):('null'))+`</td>
-          <td>`+((r.data[id].To!=null)?(r.data[id].To.Latitude.toFixed(6)):('null'))+`</td>
-          <td>`+r.data[id].Longitude.toFixed(6)+`</td>
-          <td>`+r.data[id].Latitude.toFixed(6)+`</td>
-          <td>`+r.data[id].Status+`</td>
+          <td>`+r.data[id].uav_id+`</td>
+          <td>`+r.data[id].uav_name+`</td>
+          <td>`+r.data[id].uav_serving_payment_id+`</td>
+          <td>`+r.data[id].uav_longitude.toFixed(6)+`</td>
+          <td>`+r.data[id].uav_latitude.toFixed(6)+`</td>
+          <td>`+r.data[id].uav_status+`</td>
         </tr>`
                 if (r.data[id].Status=='配送中') {
                   if (!uavs.hasOwnProperty(id)) {

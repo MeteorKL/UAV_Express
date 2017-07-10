@@ -38,10 +38,14 @@ func tGetUav(id string) string {
 	_, data := koala.Request("GET", "http://localhost:2017/uav/"+id, "")
 	return string(data)
 }
+func tGetUavs() string {
+	_, data := koala.Request("GET", "http://localhost:2017/uavs", "")
+	return string(data)
+}
 
 func Test_getItemList(t *testing.T) {
 	t.Log(tGetItemList())
-	if payments, err := tGetPayments("1"); err == nil && len(payments) > 0 {
+	if payments, err := tGetPayments("1"); err == nil {
 		t.Log("订单数量: ", len(payments))
 	}
 	t.Log(tPostPayment("1"))
@@ -53,4 +57,5 @@ func Test_getItemList(t *testing.T) {
 			t.Log(tGetUav(uav_id))
 		}
 	}
+	t.Log(tGetUavs())
 }
