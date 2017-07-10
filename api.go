@@ -81,6 +81,7 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 	if uav == nil {
 		return false
 	}
+	uav.UAV_status = UAV_STATUS_SENDING
 	defer uav.UnLock()
 
 	payment := Payment{

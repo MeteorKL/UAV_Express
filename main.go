@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/MeteorKL/koala"
 )
 
@@ -17,5 +18,5 @@ func main() {
 	apiHandlers()
 	uavHandlers()
 	// http.HandleFunc("/ws", wsHandler)
-	koala.RunWithLog("2017")
+	koala.Run("2017")
 }
