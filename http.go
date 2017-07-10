@@ -1,47 +1,25 @@
 package main
 
 import (
-	"github.com/MeteorKL/koala"
 	"net/http"
 	"strconv"
+
+	"github.com/MeteorKL/koala"
 )
 
-func getSingleStringParamOrDefault(p map[string][]string, key string, def string) (ret string) {
-	rets := p[key]
-	if rets == nil || len(rets) == 0 {
-		ret = def
-	} else {
-		ret = rets[0]
-	}
-	return
-}
-
-func getSingleIntParamOrDefault(p map[string][]string, key string, def int) (ret int) {
-	rets := p[key]
-	if rets == nil || len(rets) == 0 {
-		ret = def
-	} else {
-		var err error
-		ret, err = strconv.Atoi(rets[0])
-		if err != nil {
-			ret = def
-		}
-	}
-	return
-}
-
 func apiHandlers() {
+	initDB()
 	koala.Get("/api/item", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		var start, limit int
-		start = getSingleIntParamOrDefault(p.ParamGet, "start", 0)
-		limit = getSingleIntParamOrDefault(p.ParamGet, "limit", 30)
+		start = koala.GetSingleIntParamOrDefault(p.ParamGet, "start", 0)
+		limit = koala.GetSingleIntParamOrDefault(p.ParamGet, "limit", 30)
 		items := getItemList(start, limit)
 		koala.WriteJSON(w, items)
 	})
 
 	koala.Get("/user/:id/payment", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		_id := p.ParamUrl["id"]
-		num := getSingleIntParamOrDefault(p.ParamGet, "num", 10)
+		num := koala.GetSingleIntParamOrDefault(p.ParamGet, "num", 10)
 		id, err := strconv.Atoi(_id)
 		if err != nil {
 			w.WriteHeader(400)
@@ -50,16 +28,23 @@ func apiHandlers() {
 		}
 		user := getUserById(id)
 		if user == nil {
-			w.WriteHeader(403)
-			w.Write([]byte(err.Error()))
+			w.WriteHeader(404)
+			w.Write([]byte("no user"))
 			return
 		}
 		payments := user.getRecentPayments(num)
 		koala.WriteJSON(w, payments)
 	})
 
-	koala.Get("/uav", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
-
+	koala.Get("/uav/:id", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		_id := p.ParamUrl["id"]
+		id, err := strconv.Atoi(_id)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		koala.WriteJSON(w, getUAVById(id))
 	})
 
 	koala.Post("/user/:id/payment", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
@@ -151,7 +136,7 @@ func apiHandlers() {
 	})
 
 	koala.Put("/user/:id/stop", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
-		pin := getSingleStringParamOrDefault(p.ParamPost, "pin", "")
+		pin := koala.GetSingleStringParamOrDefault(p.ParamPost, "pin", "")
 		if pin == "" {
 			w.WriteHeader(400)
 			w.Write([]byte("Not proper string of stop"))
@@ -180,7 +165,7 @@ func apiHandlers() {
 
 	koala.Post("/stop/:pin/pay/:id", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		pin := p.ParamUrl["pin"]
-		userId := getSingleIntParamOrDefault(p.ParamPost, "userId", 0)
+		userId := koala.GetSingleIntParamOrDefault(p.ParamPost, "userId", 0)
 		user := getUserById(userId)
 		if user == nil || user.Stop_pin == pin {
 			w.WriteHeader(404)

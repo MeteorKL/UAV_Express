@@ -116,7 +116,7 @@ var (
 	}
 )
 
-func (userIndex *UserIndex) getUserById(id int) *User {
+func (user_id_index *UserIndex) getUserById(id int) *User {
 	user_id_index.lock.RLock()
 	defer user_id_index.lock.RUnlock()
 
@@ -131,7 +131,7 @@ func (userIndex *UserIndex) getUserById(id int) *User {
 	return userRecord.GetRef()
 }
 
-func (paymentUserIdTimeIndex *PaymentUserIdTimeIndex) insertPayment(payment Payment) {
+func (payment_user_id_time_index *PaymentUserIdTimeIndex) insertPayment(payment Payment) {
 	payment_user_id_time_index.lock.Lock()
 	defer payment_user_id_time_index.lock.Unlock()
 
@@ -143,7 +143,11 @@ func (paymentUserIdTimeIndex *PaymentUserIdTimeIndex) insertPayment(payment Paym
 	})
 }
 
-func (paymentUserIdTimeIndex *PaymentUserIdTimeIndex) getUserLastPayments(userId, start, limit int) (payments []*Payment) {
+func (payment_user_id_time_index *PaymentUserIdTimeIndex) getPayment(id int) {
+
+}
+
+func (payment_user_id_time_index *PaymentUserIdTimeIndex) getUserLastPayments(userId, start, limit int) (payments []*Payment) {
 	payments = []*Payment{}
 	if start < 0 || limit < 1 {
 		return
@@ -277,7 +281,7 @@ func (uav_index *UAVIndex) getAvailableUAV(userId int) (uav *UAV) {
 	for {
 		uavRecord := iter.Value().(UAVRecord)
 		uav = uavRecord.GetRef()
-		if uav.LockForUser(userId) {
+		if uav.UAV_status == UAV_STATUS_READY && uav.LockForUser(userId) {
 			return uav
 		} else {
 			if !iter.Next() {

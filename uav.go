@@ -45,7 +45,6 @@ var she31Pos = pos(120.131402, 30.275439, []string{"杭州市", "浙大路", "�
 func randomPos(Longitude float64, Latitude float64, to *Pos) (float64, float64) {
 	t := time.Now().Unix()
 	r := float64(rand.Int63n(t)) / float64(t)
-	println(r)
 	Longitude = r*(to.Longitude-Longitude) + Longitude
 	Latitude = r*(to.Latitude-Latitude) + Latitude
 	return Longitude, Latitude
@@ -102,8 +101,6 @@ func getAvailableUav(From *Pos) (string, error) {
 
 func assignUavTasks(From *Pos, To *Pos) string {
 	if distance(From, To) > distance(she31Pos, shitang2Pos)*5 {
-		println(distance(From, To))
-		println(distance(she31Pos, shitang2Pos) * 5)
 		return "附近没有无人机"
 	}
 	ID, err := getAvailableUav(From)
@@ -174,9 +171,6 @@ func regularMove() {
 }
 
 func uavHandlers() {
-	println(distance(she30Pos, shitang2Pos) * 1000)
-	println(distance(she30Pos, she31Pos) * 1000)
-	println(distance(she31Pos, shitang2Pos) * 1000)
 	addUavs(uavIDs, shitang2Pos)
 	go regularMove()
 	koala.Get("/api/getuavs", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
@@ -211,7 +205,6 @@ func uavHandlers() {
 			addr = arr
 		}
 		pos := pos(Longitude, Latitude, addr)
-		println(pos)
 		message = assignUavTasks(shitang2Pos, pos)
 		data = pos
 		koala.WriteJSON(w, map[string]interface{}{
