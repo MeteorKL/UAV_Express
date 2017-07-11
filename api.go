@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -26,9 +27,20 @@ type UAV struct {
 
 const v float64 = 0.030
 
-func (uav *UAV) move(from_longitude float64, from_latitude float64, to_longitude float64, to_latitude float64) {
+func (uav *UAV) move(user_id int, from_longitude float64, from_latitude float64, to_longitude float64, to_latitude float64) {
 	distance_from_to := distance(from_longitude, from_latitude, to_longitude, to_latitude)
 	r := v / distance_from_to
+	u := getUserById(user_id)
+	if u.User_balance < 0 {
+		loginedConns[user_id].msg <- map[string]interface{}{
+			"type": "msg",
+			"data": "您已欠费" + strconv.FormatFloat(-u.User_balance, 'f', 2, 64) + "，请及时充值",
+		}
+	}
+	loginedConns[user_id].msg <- map[string]interface{}{
+		"type": "msg",
+		"data": "无人机已经出发",
+	}
 	for {
 		timer1 := time.NewTicker(time.Second)
 		for {
@@ -42,10 +54,23 @@ func (uav *UAV) move(from_longitude float64, from_latitude float64, to_longitude
 						uav.UAV_longitude = to_longitude
 						uav.UAV_latitude = to_latitude
 						uav.UAV_status = UAV_STATUS_LANDING
+						loginedConns[user_id].msg <- map[string]interface{}{
+							"type": "msg",
+							"data": "无人机已经到达，正在着陆",
+						}
 						println("reached")
 					}
 					uav.Sync()
 				case UAV_STATUS_LANDING:
+					payment := getPaymentById(uav.UAV_serving_payment_id)
+					price := payment.Payment_price
+					user := getUserById(payment.Payment_user_id)
+					user.User_balance -= price
+					user.Sync()
+					loginedConns[user_id].msg <- map[string]interface{}{
+						"type": "msg",
+						"data": "订单已完成，本次消费" + strconv.FormatFloat(price, 'f', 2, 64) + "，账户余额" + strconv.FormatFloat(user.User_balance, 'f', 2, 64),
+					}
 					time.Sleep(time.Second * 5)
 					uav.UAV_status = UAV_STATUS_RETURNING
 					uav.Sync()
@@ -133,7 +158,7 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 	Payment_id := rand.Int() //TODO: Sync problem?
 	uav.UAV_serving_payment_id = Payment_id
 	uav.Sync()
-	go uav.move(uav.UAV_longitude, uav.UAV_latitude, user.Stop_longitude, user.Stop_latitude)
+	go uav.move(user.User_id, uav.UAV_longitude, uav.UAV_latitude, user.Stop_longitude, user.Stop_latitude)
 	defer uav.UnLock()
 
 	payment := Payment{

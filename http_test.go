@@ -10,7 +10,7 @@ import (
 	"github.com/MeteorKL/koala"
 )
 
-// go test -v http_test.go api.go db.go index.go
+// go test -v http_test.go api.go db.go index.go uav.go
 
 func tGetItemList() string {
 	_, data := koala.Request("GET", "http://localhost:2017/api/item", "")
@@ -38,6 +38,7 @@ func tGetUav(id string) string {
 	_, data := koala.Request("GET", "http://localhost:2017/uav/"+id, "")
 	return string(data)
 }
+
 func tGetUavs() string {
 	_, data := koala.Request("GET", "http://localhost:2017/uavs", "")
 	return string(data)

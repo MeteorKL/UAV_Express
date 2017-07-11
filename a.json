@@ -70,7 +70,7 @@
         "payment_item_id": [
             {
                 "item_id": 1,
-                "item_num": 1,
+                "item_num": 1
             }
         ],
         "payment_user_id": 1,
@@ -84,7 +84,7 @@
         "payment_item_id": [
             {
                 "item_id": 2,
-                "item_num": 2,
+                "item_num": 2
             }
         ],
         "payment_user_id": 3,
@@ -93,3 +93,4 @@
         "payment_time": 183456486
     }
 ]
+

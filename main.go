@@ -11,6 +11,7 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./static/css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./static/img"))))
 
+	go tcpServer("2018")
 	koala.RenderPath = "static/"
 	koala.Get("/", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		koala.Render(w, "index.html", nil)
