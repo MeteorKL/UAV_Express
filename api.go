@@ -32,15 +32,9 @@ func (uav *UAV) move(user_id int, from_longitude float64, from_latitude float64,
 	r := v / distance_from_to
 	u := getUserById(user_id)
 	if u.User_balance < 0 {
-		loginedConns[user_id].msg <- map[string]interface{}{
-			"type": "msg",
-			"data": "您已欠费" + strconv.FormatFloat(-u.User_balance, 'f', 2, 64) + "，请及时充值",
-		}
+		sendMsg2User(user_id, "您已欠费"+strconv.FormatFloat(-u.User_balance, 'f', 2, 64)+"，请及时充值")
 	}
-	loginedConns[user_id].msg <- map[string]interface{}{
-		"type": "msg",
-		"data": "无人机已经出发",
-	}
+	sendMsg2User(user_id, "无人机已经出发")
 	for {
 		timer1 := time.NewTicker(time.Second)
 		for {
@@ -54,10 +48,7 @@ func (uav *UAV) move(user_id int, from_longitude float64, from_latitude float64,
 						uav.UAV_longitude = to_longitude
 						uav.UAV_latitude = to_latitude
 						uav.UAV_status = UAV_STATUS_LANDING
-						loginedConns[user_id].msg <- map[string]interface{}{
-							"type": "msg",
-							"data": "无人机已经到达，正在着陆",
-						}
+						sendMsg2User(user_id, "无人机已经到达，正在着陆")
 						println("reached")
 					}
 					uav.Sync()
@@ -67,10 +58,7 @@ func (uav *UAV) move(user_id int, from_longitude float64, from_latitude float64,
 					user := getUserById(payment.Payment_user_id)
 					user.User_balance -= price
 					user.Sync()
-					loginedConns[user_id].msg <- map[string]interface{}{
-						"type": "msg",
-						"data": "订单已完成，本次消费" + strconv.FormatFloat(price, 'f', 2, 64) + "，账户余额" + strconv.FormatFloat(user.User_balance, 'f', 2, 64),
-					}
+					sendMsg2User(user_id, "订单已完成，本次消费"+strconv.FormatFloat(price, 'f', 2, 64)+"，账户余额"+strconv.FormatFloat(user.User_balance, 'f', 2, 64))
 					time.Sleep(time.Second * 5)
 					uav.UAV_status = UAV_STATUS_RETURNING
 					uav.Sync()

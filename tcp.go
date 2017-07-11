@@ -80,7 +80,20 @@ func (tcpUser *TcpUser) write() {
 		}
 	}
 	delete(conns, tcpUser.conn.RemoteAddr().String())
-	delete(loginedConns, tcpUser.u.User_id)
+	if tcpUser.u != nil {
+		if _, ok := loginedConns[tcpUser.u.User_id]; ok {
+			loginedConns[tcpUser.u.User_id] = nil
+		}
+	}
+}
+
+func sendMsg2User(user_id int, msg string) {
+	if c, ok := loginedConns[user_id]; ok && c != nil {
+		c.msg <- map[string]interface{}{
+			"type": "msg",
+			"data": msg,
+		}
+	}
 }
 
 func (tcpUser *TcpUser) read() {
@@ -101,12 +114,9 @@ func (tcpUser *TcpUser) read() {
 		if l == 0 {
 			continue
 		}
-		if tcpUser.u != nil {
-			fmt.Printf("read msg from %s: %s\n", tcpUser.u.User_name, buf)
-		}
+		fmt.Printf("read msg: %s\n", buf)
 		var msg map[string]interface{}
 		err = json.Unmarshal(buf, &msg)
-		fmt.Println(msg)
 		if err != nil {
 			fmt.Println("json: ", err)
 			continue
