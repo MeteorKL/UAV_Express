@@ -146,12 +146,10 @@ func apiHandlers() {
 		}
 		user := getUserById(id)
 		if user == nil {
-			println(items)
 			w.WriteHeader(404)
 			w.Write([]byte("No this user"))
 			return
 		}
-
 		if user == nil || user.Stop_pin == "" {
 			w.WriteHeader(404)
 			w.Write([]byte("No this user or user's stop"))

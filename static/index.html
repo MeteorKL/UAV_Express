@@ -54,6 +54,10 @@
             console.error(e)
           })
         }
+        const UAV_STATUS_READY = 0
+        const UAV_STATUS_SENDING = 1
+        const UAV_STATUS_LANDING = 2
+        const UAV_STATUS_RETURNING = 3
         initMap("container")
         setInterval(() => {
           AjaxGet('/uavs', (r) => {
@@ -72,7 +76,7 @@
           <th>to_longitude</th>
           <th>to_latitude</th>
         </tr>`
-        console.log(r.data)
+        //console.log(r.data)
               for (var id in r.data.uavs) {
                 html+=` <tr>
           <td>`+r.data.uavs[id].uav_id+`</td>
@@ -86,23 +90,19 @@
           <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].to_longitude:"")+`</td>
           <td>`+(r.data.from_to[id]!=null?r.data.from_to[id].to_latitude:"")+`</td>
         </tr>`
-                // if (r.data[id].Status=='配送中') {
-                //   if (!uavs.hasOwnProperty(id)) {
-                //     newUav(r.data[id])
-                //   } else {
-                //     updateUav(r.data[id])
-                //   }
-                //   uavs[id] = r.data[id]
-                // } else if (r.data[id].Status=='正在返程') {
-                //   updateUav(r.data[id])
-                // } else if (r.data[id].Status=='ob') {
-                //   if (uavs.hasOwnProperty(id)) {
-                //     removeUav(r.data[id])
-                //     delete uavs[id]
-                //   }
-                // } else if (uavs.hasOwnProperty(id)) {
-                //   updateUav(r.data[id])
-                // }
+                u = r.data.uavs[id]
+                from_to = r.data.from_to[id]
+                if (u.uav_status==UAV_STATUS_READY) {
+                   removeUav(id)
+                   uavs[id] = null
+                } else {
+                  updateUav(id, u.uav_longitude, u.uav_latitude, 
+                             from_to.from_longitude, from_to.from_latitude,
+                             from_to.to_longitude, from_to.to_latitude)
+                  uavs[id] = {id:id, longitude: u.uav_longitude, latitude: u.uav_latitude, 
+                                    from_longitude: from_to.from_longitude, from_latitude: from_to.from_latitude,
+                                  to_longitude: from_to.to_longitude, to_latitude: from_to.to_latitude}
+                }
               }
               html += `</table>`
               document.getElementById('testUav').innerHTML = html

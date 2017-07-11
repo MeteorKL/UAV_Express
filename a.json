@@ -49,7 +49,7 @@
     {
         "uav_id": 1,
         "uav_name": "No0",
-        "uav_longitude": 120.131658, 
+        "uav_longitude": 120.131658,
         "uav_latitude": 30.273568,
         "uav_serving_payment_id": 0,
         "uav_status": 0
@@ -57,7 +57,7 @@
     {
         "uav_id": 2,
         "uav_name": "No1",
-        "uav_longitude": 120.131658, 
+        "uav_longitude": 120.131658,
         "uav_latitude": 30.273568,
         "uav_serving_payment_id": 0,
         "uav_status": 0
@@ -67,8 +67,13 @@
     {
         "payment_id": 1,
         "payment_number": "",
-        "payment_item_id": null,
-        "payment_user_id": 2,
+        "payment_item_id": [
+            {
+                "item_id": 1,
+                "item_num": 1,
+            }
+        ],
+        "payment_user_id": 1,
         "payment_uav_id": 0,
         "payment_price": 0,
         "payment_time": 15646463
@@ -76,11 +81,15 @@
     {
         "payment_id": 3,
         "payment_number": "",
-        "payment_item_id": null,
+        "payment_item_id": [
+            {
+                "item_id": 2,
+                "item_num": 2,
+            }
+        ],
         "payment_user_id": 3,
         "payment_uav_id": 0,
         "payment_price": 0,
         "payment_time": 183456486
- 
     }
 ]

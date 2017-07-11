@@ -57,7 +57,6 @@ func Test_getItemList(t *testing.T) {
 		t.Log("订单数量: ", len(payments))
 		for i := range payments {
 			t.Log(payments[i])
-			t.Log(getPaymentById(payments[i].Payment_id))
 			_uav_id := payments[i].Payment_uav_id
 			uav_id := strconv.Itoa(_uav_id)
 			t.Log(tGetUav(uav_id))

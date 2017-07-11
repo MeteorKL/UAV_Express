@@ -199,7 +199,7 @@ func (payment_user_id_time_index *PaymentUserIdTimeIndex) getUserLastPayments(us
 			return
 		}
 	}
-	sum := 1
+	sum := 0
 
 	for sum < limit {
 		paymentRecord := iter.Value().(PaymentRecord)

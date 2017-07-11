@@ -51,13 +51,13 @@ func (uav *UAV) move(from_longitude float64, from_latitude float64, to_longitude
 					uav.Sync()
 				case UAV_STATUS_RETURNING:
 					uav.UAV_longitude = r*(from_longitude-to_longitude) + uav.UAV_longitude
-					uav.UAV_latitude = r*(from_longitude-to_longitude) + uav.UAV_latitude
-					println(uav.UAV_longitude, uav.UAV_latitude)
-					println(distance(uav.UAV_longitude, uav.UAV_latitude, to_longitude, to_longitude), distance_from_to)
-					if distance(uav.UAV_longitude, uav.UAV_latitude, to_longitude, to_longitude) > distance_from_to {
+					uav.UAV_latitude = r*(from_latitude-to_latitude) + uav.UAV_latitude
+					if distance(uav.UAV_longitude, uav.UAV_latitude, to_longitude, to_latitude) > distance_from_to {
 						uav.UAV_longitude = from_longitude
 						uav.UAV_latitude = from_latitude
 						uav.UAV_status = UAV_STATUS_READY
+						uav.UAV_serving_payment_id = 0
+						println("finished")
 					}
 					uav.Sync()
 				case UAV_STATUS_READY:
