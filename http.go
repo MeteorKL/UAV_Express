@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -77,6 +78,35 @@ func apiHandlers() {
 				"uavs": uavs,
 				// "payments": payments,
 				"from_to": from_to,
+			},
+		},
+		)
+	})
+
+	koala.Get("/payment/:id/uav", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		_id := p.ParamUrl["id"]
+		id, err := strconv.Atoi(_id)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("param id error"))
+			return
+		}
+		payment := getPaymentById(id)
+		user := getUserById(payment.Payment_user_id)
+		uav := getUAVById(payment.Payment_uav_id)
+		fmt.Println(payment)
+		fmt.Println(user)
+		fmt.Println(uav)
+		koala.WriteJSON(w, map[string]interface{}{
+			"status":  0,
+			"message": "获取无人机信息成功",
+			"data": map[string]interface{}{
+				"longitude":      uav.UAV_longitude,
+				"latitude":       uav.UAV_latitude,
+				"from_longitude": STORE_LONGITUDE,
+				"from_latitude":  STORE_LATITUDE,
+				"to_longitude":   user.Stop_longitude,
+				"to_latitude":    user.Stop_latitude,
 			},
 		},
 		)
