@@ -103,9 +103,6 @@ func DBLoad(path string) error {
 
 	reader := bufio.NewReader(file)
 	decoder := json.NewDecoder(reader)
-	if err := decoder.Decode(&itemTable); err != nil {
-		return err
-	}
 	if err := decoder.Decode(&userTable); err != nil {
 		return err
 	}
@@ -113,6 +110,21 @@ func DBLoad(path string) error {
 		return err
 	}
 	if err := decoder.Decode(&paymentTable); err != nil {
+		return err
+	}
+	return nil
+}
+
+func DBLoadItem(path string) error {
+	file, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+	decoder := json.NewDecoder(reader)
+	if err := decoder.Decode(&itemTable); err != nil {
 		return err
 	}
 	return nil

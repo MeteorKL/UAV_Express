@@ -159,6 +159,28 @@ func apiHandlers() {
 		}
 	})
 
+	koala.Get("/user/:id/button", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		_id := p.ParamUrl["id"]
+		id, err := strconv.Atoi(_id)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("param num error"))
+			return
+		}
+		u := getUserById(id)
+		if u == nil {
+			w.WriteHeader(400)
+			w.Write([]byte("user error"))
+			return
+		}
+		var items []*Item
+		for _, id := range u.Stop_buttons {
+			item := getItemById(id)
+			items = append(items, item)
+		}
+		koala.WriteJSON(w, items)
+	})
+
 	koala.Put("/user/:id/button", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		items := p.ParamPost["items"]
 		if items == nil || len(items) != 6 {
@@ -227,13 +249,18 @@ func apiHandlers() {
 		w.Write([]byte("ok"))
 	})
 
-	koala.Post("/stop/:pin/pay/:id", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
-		pin := p.ParamUrl["pin"]
-		userId := koala.GetSingleIntParamOrDefault(p.ParamPost, "userId", 0)
+	koala.Post("/user/:id/stop/pay", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		_userId := p.ParamUrl["id"]
+		userId, err := strconv.Atoi(_userId)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("param userId error"))
+			return
+		}
 		user := getUserById(userId)
-		if user == nil || user.Stop_pin == pin {
+		if user == nil {
 			w.WriteHeader(404)
-			w.Write([]byte("No this user or pin or not matching"))
+			w.Write([]byte("No this user"))
 			return
 		}
 
@@ -247,7 +274,9 @@ func apiHandlers() {
 
 		if user.createPayment([]ItemPair{{user.Stop_buttons[button_id], 1}}) {
 			w.WriteHeader(200)
-			w.Write([]byte("ok"))
+			koala.WriteJSON(w, map[string]interface{}{
+				"message": "ok",
+			})
 			return
 		}
 		w.WriteHeader(404)

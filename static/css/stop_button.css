@@ -1,0 +1,12 @@
+.food {
+    width: 100%;
+}
+.food > img {
+    width: 100%;
+}
+.stop td {
+    width: 16.6%;
+} 
+.result {
+    text-align: center;
+}

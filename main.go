@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	initFoods()
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./static/js"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./static/css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./static/img"))))
@@ -15,6 +16,9 @@ func main() {
 	koala.RenderPath = "static/"
 	koala.Get("/", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		koala.Render(w, "index.html", nil)
+	})
+	koala.Get("/user/:id/stop", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		koala.Render(w, "stop_button.html", nil)
 	})
 	apiHandlers()
 	uavHandlers()
