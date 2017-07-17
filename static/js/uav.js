@@ -15,7 +15,7 @@ function initMap(container) {
     map.addControl(new BMap.NavigationControl()) 
     map.addControl(new BMap.ScaleControl()) 
     map.addControl(new BMap.OverviewMapControl())
-    map.centerAndZoom(p1, 18)
+    map.centerAndZoom(p1, 17)
     uavIcon = new BMap.Icon('/img/uav.png', new BMap.Size(64, 40), {anchor: new BMap.Size(32, 20)})//动车
 }
 

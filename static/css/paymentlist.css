@@ -19,10 +19,35 @@
     bottom: 0;
     left: 0;
     right: 0;
+    overflow-y:scroll;
+}
+.paymentlist li {
+    background-color: #fff;
+    border-bottom: 1px #f5f5f5 solid;
 }
 .top td {
     height: 50px;
 }
 .top img {
     height: 100%;
+}
+
+.scroll { 
+  width: 10px;
+  position:absolute; 
+  top:0; 
+  bottom: 0;
+  background: #666666;
+  border-radius:10px;
+}
+.scroll:hover {
+  background: #444444;
+}
+.scrollBackground {
+  position: absolute;
+  top: 0;
+  width: 10px; 
+  height: 100%;
+  right: 0px; 
+  background: #ccc;
 }

@@ -5,7 +5,7 @@
         "user_avatar": "https://docs.jiguang.cn/jpush/client/image/jpush_android.png",
         "user_balance": 100,
         "user_password": "MeteorS2",
-        "stop_pin": "",
+        "stop_pin": "???",
         "stop_longitude": 120.132193,
         "stop_latitude": 30.275040,
         "stop_buttons": [
@@ -67,7 +67,7 @@
         "payment_user_id": 1,
         "payment_uav_id": 0,
         "payment_price": 10.5,
-        "payment_time": 1500259272
+        "payment_time": 1500263316202
     },
     {
         "payment_id": 3,
@@ -81,7 +81,7 @@
         "payment_user_id": 3,
         "payment_uav_id": 0,
         "payment_price": 21,
-        "payment_time": 1500259272
+        "payment_time": 1500263316202
     }
 ]
 

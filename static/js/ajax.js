@@ -8,8 +8,8 @@ function AjaxGet(url,callback,failback) {
         const r = JSON.parse(xhr.responseText);
         callback(r);
       } catch (e) {
-        // failback(e);
-        callback(xhr.responseText)
+        failback(e);
+        // callback(xhr.responseText)
       }
     } else if (xhr.readyState === 4) {
       console.log(xhr.status, xhr.responseText);

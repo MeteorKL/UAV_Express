@@ -22,6 +22,9 @@ func main() {
 	koala.Get("/user/:id/paymentlist", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		koala.Render(w, "paymentlist.html", nil)
 	})
+	koala.Get("/user/:id/setbutton", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		koala.Render(w, "button.html", nil)
+	})
 	apiHandlers()
 	uavHandlers()
 	// http.HandleFunc("/ws", wsHandler)

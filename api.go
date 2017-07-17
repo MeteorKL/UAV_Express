@@ -135,7 +135,7 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 	price := 0.0
 	for _, p := range pairs {
 		item := getItemById(p.Item_id)
-		price += item.Item_price
+		price += item.Item_price * float64(p.Item_num)
 	}
 
 	uav := uav_index.getAvailableUAV(user.User_id)

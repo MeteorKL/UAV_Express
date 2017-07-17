@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置按钮</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .panel-body {
+            cursor: pointer;
+        }
+
+        .panel-body img {
+            height: 100px;
+            margin-right: 55px;
+        }
+    </style>
+</head>
+<body>
+<div id="main" class="container">
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel1">
+        <div class="panel-body" onclick="change(1)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel2">
+        <div class="panel-body" onclick="change(2)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel3">
+        <div class="panel-body" onclick="change(3)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel4">
+        <div class="panel-body" onclick="change(4)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel5">
+        <div class="panel-body" onclick="change(5)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default col-md-4 col-md-offset-1" id="panel6">
+        <div class="panel-body" onclick="change(6)">
+            <img src="https://goo.gl/3bwJzw" style="float:left">
+            <div style="float:left">
+                <h4>商品名称</h4>
+                <p>商品介绍</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 col-md-offset-5">
+        <button type="button" class="btn btn-default" style="width: 20%; margin-left:40%" onclick="submit()">提交</button>
+    </div>
+
+</div>
+
+<div id="sel" style="display: none; position: absolute; top:0; width: 100%" class="container">
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/1.10.1/jquery.js"></script>
+
+<script>
+    const root = "";
+    var cur = 0;
+    var buttons = [];
+    var items = [];
+
+    function load() {
+        $.get(root + '/user/1/button', function(data) {
+            var decoded = JSON.parse(data);
+            for (var i = 0; i < 6; i++) {
+                $("#panel" + (i+1)).find("img").attr('src', decoded[i].item_img);
+                $("#panel" + (i+1)).find("h4").html(decoded[i].item_name);
+                $("#panel" + (i+1)).find("p").html(decoded[i].item_description);
+                buttons[i] = decoded[i].item_id;
+            }
+        });
+
+
+        $.get(root + '/item', function(data) {
+            var html = '<ul class="list-group">';
+            var decoded = JSON.parse(data);
+            items = decoded;
+            for (var i = 0; i < decoded.length; i++) {
+                html += '<li class="list-group-item" style="cursor: pointer" onclick="selectItem(' + i + ',' +
+                    decoded[i].item_id + ')">' +
+                    '<img src="' + decoded[i].item_img + '" style="float:left; height: 100px">' +
+                    '<div style="float:left"><h4>' + decoded[i].item_name + '</h4>' +
+                    '<p>' + decoded[i].item_description + '</p></div><div style="clear: both"></div> </li>';
+            }
+            html += '</ul>';
+            $("#sel").html(html);
+        });
+    }
+
+    function change(id) {
+        cur = id;
+        $("#sel").show();
+    }
+
+    function selectItem(i, id) {
+        if (cur == 0) return;
+        buttons[cur-1] = id;
+        $("#panel" + (cur)).find("img").attr('src', items[i].item_img);
+        $("#panel" + (cur)).find("h4").html(items[i].item_name);
+        $("#panel" + (cur)).find("p").html(items[i].item_description);
+        $("#sel").hide();
+
+    }
+
+    function submit() {
+        console.log(buttons);
+        var data = "";
+        for (var i = 0; i < 6; i++) {
+            if (i != 0) {
+                data += "&";
+            }
+            data += "items=" + buttons[i];
+        }
+
+        $.ajax({
+            type: "put",
+            url: root + "/user/1/button",
+            data: data,
+            success: function(data) {
+                alert("提交成功！");
+            }
+        })
+    }
+
+    load();
+</script>
+
+</body>
+</html>

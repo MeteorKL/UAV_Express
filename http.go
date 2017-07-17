@@ -14,6 +14,7 @@ func apiHandlers() {
 		start = koala.GetSingleIntParamOrDefault(p.ParamGet, "start", 0)
 		limit = koala.GetSingleIntParamOrDefault(p.ParamGet, "limit", 30)
 		items := getItemList(start, limit)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		koala.WriteJSON(w, items)
 	})
 
@@ -99,8 +100,7 @@ func apiHandlers() {
 		var paymentlist []map[string]interface{}
 		var uav interface{}
 		payments := user.getRecentPayments(100)
-		if len(payments) > 0 {
-			payment := payments[0]
+		for _, payment := range payments {
 			var itemlist []map[string]interface{}
 			var img string
 			for id, t := range payment.Payment_items {
@@ -110,7 +110,7 @@ func apiHandlers() {
 				}
 				itemlist = append(itemlist, map[string]interface{}{
 					"name":  item.Item_name,
-					"price": item.Item_price,
+					"price": item.Item_price * float64(t.Item_num),
 					"num":   t.Item_num,
 				})
 			}
@@ -252,6 +252,7 @@ func apiHandlers() {
 			item := getItemById(id)
 			items = append(items, item)
 		}
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		koala.WriteJSON(w, items)
 	})
 
@@ -292,6 +293,7 @@ func apiHandlers() {
 		}
 		user.Sync()
 		w.WriteHeader(200)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Write([]byte("ok"))
 	})
 
@@ -338,13 +340,7 @@ func apiHandlers() {
 			return
 		}
 
-		_id := p.ParamUrl["id"]
-		button_id, err := strconv.Atoi(_id)
-		if err != nil {
-			w.WriteHeader(400)
-			w.Write([]byte(err.Error()))
-			return
-		}
+		button_id := koala.GetSingleIntParamOrDefault(p.ParamPost, "id", 0)
 
 		if user.createPayment([]ItemPair{{user.Stop_buttons[button_id], 1}}) {
 			w.WriteHeader(200)

@@ -9,6 +9,7 @@
   <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
   <script type="text/javascript" src="/js/uav.js"></script>
   <script type="text/javascript" src="/js/ajax.js"></script>
+  <!-- <script src="/js/scroll.js"></script> -->
   <link rel="stylesheet" href="/css/paymentlist.css" />
 </head>
 
@@ -17,21 +18,6 @@
     <div id="container"></div>
   </div>
   <div id="paymentlist" class="paymentlist">
-    <ul>
-      <li>
-          <table class="top">
-            <tr>
-              <td><img src="https://fuss10.elemecdn.com/4/81/c83b0b530be44c7c8f671d0342613jpeg.jpeg?imageMogr2/thumbnail/200x200/format/webp/quality/85" /></td>
-              <td><div><span>订单编号: </span><span>124324</span></div>
-              <div><span>下单时间: </span><span>2017-07-15 18:31</span></div></td>
-            </tr>
-          </table>
-          <ul class="foodlist">
-            <li><span>散装国产红布林,450g</span><span>x1</span><span>¥10.5</span></li>
-          </ul>
-          <div><span>实付: </span><span>¥10.5</span></div>
-      </li>
-    </ul>
   </div>
   <script type="text/javascript">
     const UAV_STATUS_READY = 0
@@ -44,13 +30,35 @@
     url = '/user/' + user_id + '/payments'
     setInterval(() => {
       AjaxGet(url, (r) => {
-        console.log(r)
+        // console.log(r)
         var id = 0
-        var paymentlist = ''
-        for (var i = 0; i < r.paymentlist.length; i++) {
+        var paymentlist = '<ul>'
+        var l = r.paymentlist.length
+        
+        for (var i = 0; i < l; i++) {
           var payment = r.paymentlist[i];
-          // paymentlist += `<ul><li><div><span>`
+          paymentlist += `
+      <li>
+          <table class="top">
+            <tr>
+              <td><img src="`+ payment.img + `" /></td>
+              <td><div><span>订单编号: </span><span>`+ payment.id + `</span></div>
+              <div><span>下单时间: </span><span>`+ payment.time + `</span></div></td>
+            </tr>
+          </table>
+          <table class="foodlist">`
+          for (var j = 0; j < payment.items.length; j++) {
+            var item = payment.items[j];
+            paymentlist += `
+            <tr><td>`+ item.name + `</td><td>x` + item.num + `</td><td>¥` + item.price + `</td></tr>`
+          }
+          paymentlist += `
+          </table>
+          <div><span>实付: </span><span>¥`+ payment.price + `</span></div>
+      </li>`
         }
+        paymentlist += `</ul>`
+        document.getElementById("paymentlist").innerHTML = paymentlist
         if (r.uav != null) {
           if (r.uav.status == UAV_STATUS_READY) {
             removeUav(id)
