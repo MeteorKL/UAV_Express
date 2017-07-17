@@ -21,6 +21,7 @@ const (
 type DB_Item struct {
 	Item_id          int     `json:"item_id"`
 	Item_name        string  `json:"item_name"`
+	Item_type        string  `json:"item_type"`
 	Item_img         string  `json:"item_img"`
 	Item_price       float64 `json:"item_price"`
 	Item_description string  `json:"item_description"`

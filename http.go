@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -83,6 +82,72 @@ func apiHandlers() {
 		)
 	})
 
+	koala.Get("/user/:id/payments", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		_id := p.ParamUrl["id"]
+		id, err := strconv.Atoi(_id)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		user := getUserById(id)
+		if user == nil {
+			w.WriteHeader(404)
+			w.Write([]byte("no user"))
+			return
+		}
+		var paymentlist []map[string]interface{}
+		var uav interface{}
+		payments := user.getRecentPayments(100)
+		if len(payments) > 0 {
+			payment := payments[0]
+			var itemlist []map[string]interface{}
+			var img string
+			for id, t := range payment.Payment_items {
+				item := getItemById(t.Item_id)
+				if id == 0 {
+					img = item.Item_img
+				}
+				itemlist = append(itemlist, map[string]interface{}{
+					"name":  item.Item_name,
+					"price": item.Item_price,
+					"num":   t.Item_num,
+				})
+			}
+			paymentlist = append(paymentlist, map[string]interface{}{
+				"img":   img,
+				"id":    payment.Payment_id,
+				"time":  payment.Payment_time,
+				"items": itemlist,
+				"price": payment.Payment_price,
+			})
+			user := getUserById(payment.Payment_user_id)
+			if user == nil {
+				w.WriteHeader(400)
+				w.Write([]byte("user error"))
+				return
+			}
+			UAV := getUAVById(payment.Payment_uav_id)
+			if UAV == nil {
+				UAV = nil
+			} else {
+				uav = map[string]interface{}{
+					"status":         UAV.UAV_status,
+					"longitude":      UAV.UAV_longitude,
+					"latitude":       UAV.UAV_latitude,
+					"from_longitude": STORE_LONGITUDE,
+					"from_latitude":  STORE_LATITUDE,
+					"to_longitude":   user.Stop_longitude,
+					"to_latitude":    user.Stop_latitude,
+				}
+			}
+		}
+		koala.WriteJSON(w, map[string]interface{}{
+			"uav":         uav,
+			"paymentlist": paymentlist,
+		})
+	})
+
 	koala.Get("/payment/:id/uav", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		_id := p.ParamUrl["id"]
 		id, err := strconv.Atoi(_id)
@@ -92,22 +157,31 @@ func apiHandlers() {
 			return
 		}
 		payment := getPaymentById(id)
+		if payment == nil {
+			w.WriteHeader(400)
+			w.Write([]byte("payment error"))
+			return
+		}
 		user := getUserById(payment.Payment_user_id)
+		if user == nil {
+			w.WriteHeader(400)
+			w.Write([]byte("user error"))
+			return
+		}
 		uav := getUAVById(payment.Payment_uav_id)
-		fmt.Println(payment)
-		fmt.Println(user)
-		fmt.Println(uav)
+		if uav == nil {
+			w.WriteHeader(400)
+			w.Write([]byte("uav error"))
+			return
+		}
 		koala.WriteJSON(w, map[string]interface{}{
-			"status":  0,
-			"message": "获取无人机信息成功",
-			"data": map[string]interface{}{
-				"longitude":      uav.UAV_longitude,
-				"latitude":       uav.UAV_latitude,
-				"from_longitude": STORE_LONGITUDE,
-				"from_latitude":  STORE_LATITUDE,
-				"to_longitude":   user.Stop_longitude,
-				"to_latitude":    user.Stop_latitude,
-			},
+			"status":         uav.UAV_status,
+			"longitude":      uav.UAV_longitude,
+			"latitude":       uav.UAV_latitude,
+			"from_longitude": STORE_LONGITUDE,
+			"from_latitude":  STORE_LATITUDE,
+			"to_longitude":   user.Stop_longitude,
+			"to_latitude":    user.Stop_latitude,
 		},
 		)
 	})

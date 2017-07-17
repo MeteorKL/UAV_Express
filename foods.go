@@ -119,6 +119,7 @@ func initFoods() {
 			item.Item_id = Food.Virtual_food_id
 			item.Item_description = Food.Description
 			item.Item_price = Food.Specfoods[0].Price
+			item.Item_type = Foods_By_Type.Name
 			items = append(items, item)
 		}
 	}

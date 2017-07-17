@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.map {
+    position: fixed;
+    top: 0;
+    bottom: 55%;
+    left: 0;
+    right: 0;
+}
+#container {
+    height: 100%;
+    width: 100%;
+}
+.paymentlist {
+    position: fixed;
+    top: 45%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.top td {
+    height: 50px;
+}
+.top img {
+    height: 100%;
+}

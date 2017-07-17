@@ -11,7 +11,6 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./static/js"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./static/css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./static/img"))))
-
 	go tcpServer("2018")
 	koala.RenderPath = "static/"
 	koala.Get("/", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
@@ -19,6 +18,9 @@ func main() {
 	})
 	koala.Get("/user/:id/stop", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
 		koala.Render(w, "stop_button.html", nil)
+	})
+	koala.Get("/user/:id/paymentlist", func(p *koala.Params, w http.ResponseWriter, r *http.Request) {
+		koala.Render(w, "paymentlist.html", nil)
 	})
 	apiHandlers()
 	uavHandlers()

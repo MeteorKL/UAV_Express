@@ -61,7 +61,7 @@
         initMap("container")
         setInterval(() => {
           AjaxGet('/uavs', (r) => {
-            // console.log(r)
+            console.log(r)
             if (r.status == 0) {
               html = `<table border="1">
         <tr>

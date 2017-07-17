@@ -60,28 +60,28 @@
         "payment_number": "",
         "payment_item_id": [
             {
-                "item_id": 1,
+                "item_id": 646007475,
                 "item_num": 1
             }
         ],
         "payment_user_id": 1,
         "payment_uav_id": 0,
-        "payment_price": 0,
-        "payment_time": 15646463
+        "payment_price": 10.5,
+        "payment_time": 1500259272
     },
     {
         "payment_id": 3,
         "payment_number": "",
         "payment_item_id": [
             {
-                "item_id": 2,
+                "item_id": 646007475,
                 "item_num": 2
             }
         ],
         "payment_user_id": 3,
         "payment_uav_id": 0,
-        "payment_price": 0,
-        "payment_time": 183456486
+        "payment_price": 21,
+        "payment_time": 1500259272
     }
 ]
 

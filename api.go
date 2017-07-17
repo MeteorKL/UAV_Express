@@ -143,7 +143,7 @@ func (user *User) createPayment(pairs []ItemPair) bool {
 		return false
 	}
 	uav.UAV_status = UAV_STATUS_SENDING
-	Payment_id := rand.Int() //TODO: Sync problem?
+	Payment_id := int(rand.Int31()) //TODO: Sync problem?
 	uav.UAV_serving_payment_id = Payment_id
 	uav.Sync()
 	go uav.move(user.User_id, uav.UAV_longitude, uav.UAV_latitude, user.Stop_longitude, user.Stop_latitude)
